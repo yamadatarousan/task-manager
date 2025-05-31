@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}タスク編集{% else %}タスク作成{% endif %} - Task Manager
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    {% if form.instance.pk %}
+                        <i class="bi bi-pencil-square me-2"></i>タスクを編集
+                    {% else %}
+                        <i class="bi bi-plus-square me-2"></i>新しいタスクを作成
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Title Field -->
+                    <div class="mb-4">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <i class="bi bi-card-text me-2"></i>タイトル
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="{{ form.title.id_for_label }}" 
+                               name="{{ form.title.name }}" 
+                               value="{{ form.title.value|default:'' }}"
+                               placeholder="タスクのタイトルを入力してください"
+                               required>
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <i class="bi bi-text-paragraph me-2"></i>説明
+                        </label>
+                        <textarea class="form-control" 
+                                  id="{{ form.description.id_for_label }}" 
+                                  name="{{ form.description.name }}" 
+                                  rows="4" 
+                                  placeholder="タスクの詳細説明を入力してください（任意）">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Completed Field -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="{{ form.completed.id_for_label }}" 
+                                   name="{{ form.completed.name }}"
+                                   {% if form.completed.value %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ form.completed.id_for_label }}">
+                                <i class="bi bi-check-circle me-2"></i>完了済み
+                            </label>
+                        </div>
+                        {% if form.completed.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.completed.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-lg me-2"></i>
+                            {% if form.instance.pk %}更新{% else %}作成{% endif %}
+                        </button>
+                        <a href="{% url 'task_list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>キャンセル
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-info-circle me-2"></i>ヒント
+                </h6>
+                <ul class="mb-0 text-muted">
+                    <li>タイトルは必須項目です</li>
+                    <li>説明は任意ですが、詳細を記載することをお勧めします</li>
+                    <li>完了済みのチェックボックスでタスクのステータスを変更できます</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .needs-validation .form-control:invalid {
+        border-color: #dc3545;
+    }
+    
+    .needs-validation .form-control:valid {
+        border-color: #198754;
+    }
+</style>
+
+<script>
+    // Bootstrap form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}タスク削除確認 - Task Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>削除の確認
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    この操作は取り消すことができません。本当に削除しますか？
+                </div>
+                
+                <div class="task-details mb-4">
+                    <h5 class="text-danger mb-3">削除するタスク:</h5>
+                    
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ task.title }}</h6>
+                            {% if task.description %}
+                                <p class="card-text text-muted">{{ task.description }}</p>
+                            {% endif %}
+                            <div class="d-flex align-items-center">
+                                <span class="badge {% if task.completed %}bg-success{% else %}bg-warning text-dark{% endif %} me-2">
+                                    {% if task.completed %}
+                                        <i class="bi bi-check-circle me-1"></i>完了
+                                    {% else %}
+                                        <i class="bi bi-clock me-1"></i>進行中
+                                    {% endif %}
+                                </span>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {% if task.created_at %}
+                                        作成日: {{ task.created_at|date:"Y/m/d H:i" }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" class="d-flex gap-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="bi bi-trash me-2"></i>削除する
+                    </button>
+                    <a href="{% url 'task_list' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-2"></i>キャンセル
+                    </a>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 注意事項 -->
+        <div class="card mt-3 border-info">
+            <div class="card-body">
+                <h6 class="card-title text-info">
+                    <i class="bi bi-info-circle me-2"></i>注意事項
+                </h6>
+                <ul class="mb-0 text-muted small">
+                    <li>削除されたタスクは復元できません</li>
+                    <li>関連するデータもすべて削除されます</li>
+                    <li>確実に削除したい場合のみ「削除する」ボタンを押してください</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .task-details .card {
+        border-left: 4px solid #dc3545;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+</style>
+{% endblock %} 
