@@ -3,12 +3,11 @@
 {% block title %}タスク一覧 - Task Manager{% endblock %}
 
 {% block content %}
+<!-- ヘッダー -->
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">
-                <i class="bi bi-list-task me-2"></i>タスク一覧
-            </h2>
+            <h2><i class="bi bi-list-task me-2"></i>タスク一覧</h2>
             <a href="{% url 'task_create' %}" class="btn btn-primary">
                 <i class="bi bi-plus-lg me-2"></i>新しいタスク
             </a>
@@ -16,10 +15,59 @@
     </div>
 </div>
 
+<!-- 統計ダッシュボード -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up me-2"></i>統計情報
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="stat-box p-3 rounded">
+                            <h3 class="text-primary mb-2">{{ total_count }}</h3>
+                            <p class="text-muted mb-0">総タスク数</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box p-3 rounded">
+                            <h3 class="text-success mb-2">{{ completed_count }}</h3>
+                            <p class="text-muted mb-0">完了済み</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box p-3 rounded">
+                            <h3 class="text-warning mb-2">{{ pending_count }}</h3>
+                            <p class="text-muted mb-0">進行中</p>
+                        </div>
+                    </div>
+                </div>
+                {% if total_count > 0 %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ completion_rate }}%"
+                                 aria-valuenow="{{ completed_count }}" aria-valuemin="0" aria-valuemax="{{ total_count }}">
+                            </div>
+                        </div>
+                        <small class="text-muted">完了率: {{ completion_rate }}% ({{ completed_count }} / {{ total_count }})</small>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- タスク一覧 -->
 {% if tasks %}
     <div class="row">
         {% for task in tasks %}
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-lg-4 col-md-6 mb-3">
                 <div class="card h-100">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">
@@ -40,11 +88,11 @@
                         {% endif %}
                         
                         <div class="mt-auto">
-                            <div class="btn-group w-100" role="group">
-                                <a href="{% url 'task_edit' task.pk %}" class="btn btn-outline-primary btn-sm">
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'task_edit' task.pk %}" class="btn btn-sm btn-outline-primary flex-fill">
                                     <i class="bi bi-pencil me-1"></i>編集
                                 </a>
-                                <a href="{% url 'task_delete' task.pk %}" class="btn btn-outline-danger btn-sm">
+                                <a href="{% url 'task_delete' task.pk %}" class="btn btn-sm btn-outline-danger flex-fill">
                                     <i class="bi bi-trash me-1"></i>削除
                                 </a>
                             </div>
@@ -54,7 +102,7 @@
                         <small class="text-muted">
                             <i class="bi bi-calendar3 me-1"></i>
                             {% if task.created_at %}
-                                作成日: {{ task.created_at|date:"Y/m/d" }}
+                                {{ task.created_at|date:"Y/m/d" }}
                             {% else %}
                                 作成日不明
                             {% endif %}
@@ -65,98 +113,44 @@
         {% endfor %}
     </div>
 {% else %}
-    <div class="row">
-        <div class="col-12">
-            <div class="card text-center">
-                <div class="card-body py-5">
-                    <div class="mb-4">
-                        <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
-                    </div>
-                    <h4 class="card-title text-muted">タスクがありません</h4>
-                    <p class="card-text text-muted mb-4">
-                        まだタスクが登録されていません。<br>
-                        新しいタスクを追加して始めましょう！
-                    </p>
-                    <a href="{% url 'task_create' %}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-lg me-2"></i>最初のタスクを追加
-                    </a>
-                </div>
-            </div>
+    <div class="alert alert-info text-center">
+        <div class="mb-3">
+            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
         </div>
+        <h4>タスクがありません</h4>
+        <p class="mb-3">新しいタスクを追加して始めましょう！</p>
+        <a href="{% url 'task_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>最初のタスクを追加
+        </a>
     </div>
 {% endif %}
 
-<!-- 統計情報 -->
-<div class="row mt-5">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bi bi-graph-up me-2"></i>統計情報
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <div class="stat-box">
-                            <h3 class="text-primary">{{ tasks|length }}</h3>
-                            <p class="text-muted mb-0">総タスク数</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box">
-                            <h3 class="text-success">
-                                {% for task in tasks %}
-                                    {% if task.completed %}{{ forloop.counter }}{% endif %}
-                                {% empty %}0{% endfor %}
-                            </h3>
-                            <p class="text-muted mb-0">完了済み</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box">
-                            <h3 class="text-warning">
-                                {% for task in tasks %}
-                                    {% if not task.completed %}{{ forloop.counter }}{% endif %}
-                                {% empty %}0{% endfor %}
-                            </h3>
-                            <p class="text-muted mb-0">進行中</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
-    .stat-box {
-        padding: 1rem;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-    
-    .stat-box:hover {
-        background-color: rgba(0,0,0,0.05);
-        transform: translateY(-2px);
-    }
-    
-    .card-footer {
-        border-top: 1px solid rgba(0,0,0,0.125);
-    }
-    
-    .btn-group .btn {
-        border-radius: 0;
-    }
-    
-    .btn-group .btn:first-child {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-    }
-    
-    .btn-group .btn:last-child {
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-    }
+.stat-box {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.stat-box:hover {
+    background-color: rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
 </style>
 {% endblock %}
